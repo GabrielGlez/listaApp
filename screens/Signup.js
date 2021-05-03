@@ -29,7 +29,7 @@ import {
   TextLink,
   TextLinkContent,
 } from './../components/styles';
-import { View, TouchableOpacity, Touchable } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 
 //colores
 const { brand, darkLight, primary } = Colors;
@@ -67,7 +67,7 @@ const Signup = () => {
           <DateTimePicker
             testID="dateTimePicker"
             value={date}
-            mode="date"
+            mode='date'
             is24Hour={true}
             display="default"
             onChange={onChange}
@@ -106,7 +106,7 @@ const Signup = () => {
               <MyTextInput
                 label="Fecha Nacimiento"
                 icon="calendar"
-                placeholder="aaaa - mm - dd"
+                placeholder="AAAA - MM - DD"
                 placeholderTextColor={darkLight}
                 onChangeText={handleChange('dateOfBirth')}
                 onBlur={handleBlur('dateOfBirth')}
@@ -114,8 +114,8 @@ const Signup = () => {
                 isDate={true}
                 editable={false}
                 showDatePicker={showDatePicker}
+                
               />
-
               <MyTextInput
                 label="Contraseña"
                 icon="lock"
@@ -145,7 +145,7 @@ const Signup = () => {
               />
               <MsgBox>...</MsgBox>
               <StyledButton onPress={handleSubmit}>
-                <ButtonText>Iniciar Sesion</ButtonText>
+                <ButtonText>Crear Cuenta</ButtonText>
               </StyledButton>
               <Line />
               <ExtraView>
@@ -160,8 +160,8 @@ const Signup = () => {
       </InnerContainer>
     </StyledContainer>
   );
-};
 
+};
 const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, isDate, showDatePicker, ...props }) => {
   return (
     <View>
@@ -175,6 +175,7 @@ const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, i
           <StyledTextInput {...props} />
         </TouchableOpacity>
       )}
+
       {isPassword && (
         <RightIcon onPress={() => setHidePassword(!hidePassword)}>
           <Ionicons name={hidePassword ? 'md-eye-off' : 'md-eye'} size={30} color={darkLight} />
