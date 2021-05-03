@@ -1,13 +1,11 @@
 
 import React from 'react';
 
-//pantallas
+// importar pantallas
 import Login from './screens/Login';
+import Signup from './screens/Signup';
 
-
-
+//mostrar pantalla inicio
 export default function App() {
-  return (
-    <Login/>
-  );
+  return <Signup />
 }
