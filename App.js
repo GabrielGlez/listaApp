@@ -8,5 +8,5 @@ import Welcome from './screens/Welcome';
 
 //mostrar pantalla inicio
 export default function App() {
-  return <Welcome />
+  return <Login />
 }
