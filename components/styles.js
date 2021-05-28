@@ -20,7 +20,7 @@ const { primary, secondary, tertiary, darkLight, brand, green, red } = Colors;
 export const StyledContainer = styled.View`
   flex: 1;
   padding: 25px;
-  padding-top: ${StatusBarHeight + 10}px;
+  padding-top: ${StatusBarHeight + 30}px;
   background-color: ${primary};
 `;
 export const InnerContainer = styled.View`
@@ -45,13 +45,15 @@ export const Avatar = styled.Image`
   height: 100px;
   margin: auto;
   border-radius: 50px;
+  border-width: 2px;
   border-color: ${secondary};
   margin-bottom: 10px;
   margin-top: 10px;
 `;
 
 export const WelcomeImage = styled.Image`
-  
+  height: 50%;
+  min-width: 100%
 `;
 
 export const PageTitle = styled.Text`
@@ -60,6 +62,10 @@ export const PageTitle = styled.Text`
   font-weight: bold;
   color: ${brand};
   padding: 10px;
+
+  ${(props) => props.welcome && `
+    font-size: 35px;
+  `}
 `;
 
 export const SubTitle = styled.Text`
@@ -68,6 +74,11 @@ export const SubTitle = styled.Text`
   letter-spacing: 1px;
   font-weight: bold;
   color: ${tertiary};
+
+  ${(props) => props.welcome && `
+  margin-bottom: 5px;
+  font-weight: normal;
+`}
 `;
 
 export const StyleFormArea = styled.View`
@@ -134,6 +145,7 @@ export const ButtonText = styled.Text`
 export const MsgBox = styled.Text`
   text-align: center;
   font-size: 13px;
+  color: ${(props) => (props.type == 'SUCCESS' ? green :red)};
 `;
 
 export const Line = styled.View`

@@ -29,152 +29,177 @@ import {
   TextLink,
   TextLinkContent,
 } from './../components/styles';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, ActivityIndicator } from 'react-native';
 
 //colores
 const { brand, darkLight, primary } = Colors;
 
-//calendario
-import DateTimePicker from '@react-native-community/datetimepicker';
+//keyboard avoid view
+import KeyboardAvoidingWrapper from './../components/KeyboardAvoidingWrapper';
 
-const Signup = () => {
+//import axios
+import axios from 'axios';
+
+const Signup = ({ navigation }) => {
   const [hidePassword, setHidePassword] = useState(true);
-  const [show, setShow] = useState(false);
-  const [date, setDate] = useState(new Date(2000, 0, 1));
+  const [message, setMessage] = useState();
+  const [messageType, setMessageType] = useState();
 
-  //fecha elegida por usuario
-  const [dob, setDob] = useState();
+  // handeling messages
+  const handleSignup = (credentials, setSubmitting) => {
+    handleMessage(null);
+    const url = 'https://fast-castle-23744.herokuapp.com/user/signup';
 
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShow(false);
-    setDate(currentDate);
-    setDob(currentDate);
+    axios
+      .post(url, credentials)
+      .then((response) => {
+        const result = response.data;
+        const { message, status, data } = result;
+
+        if (status !== 'SUCCESS') {
+          handleMessage(message, status);
+        } else {
+          navigation.navigate('Welcome', { ...data });
+        }
+        setSubmitting(false);
+      })
+      .catch((error) => {
+        console.log(error.JSON());
+        setSubmitting(false);
+        handleMessage('Un error ha ocurrido revise su conexion a internet e intente de nuevo!');
+      });
   };
 
-  const showDatePicker = () => {
-    setShow(true);
+  const handleMessage = (message, type = 'FAILED') => {
+    setMessage(message);
+    setMessageType(type);
   };
 
   return (
-    <StyledContainer>
-      <StatusBar style="dark" />
-      <InnerContainer>
-        <PageTitle>Lista App</PageTitle>
-        <SubTitle>Crear Cuenta</SubTitle>
+    <KeyboardAvoidingWrapper>
+      <StyledContainer>
+        <StatusBar style="dark" />
+        <InnerContainer>
+          <PageTitle>Lista App</PageTitle>
+          <SubTitle>Crear Cuenta</SubTitle>
 
-        {show && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={date}
-            mode='date'
-            is24Hour={true}
-            display="default"
-            onChange={onChange}
-          />
-        )}
+          <Formik
+            initialValues={{ name: '', email: '', matricula: '', password: '', confirmPassword: '' }}
+            onSubmit={(values, { setSubmitting }) => {
+              values = { ...values };
+              if (
+                values.email == '' ||
+                values.password == '' ||
+                values.name == '' ||
+                values.matricula == '' ||
+                values.confirmPassword == ''
+              ) {
+                handleMessage('Porfavor llena todos los campos');
+                setSubmitting(false);
+              } else if (values.password !== values.confirmPassword) {
+                handleMessage('Las contraseñas no coinciden');
+                setSubmitting(false);
+              } else {
+                handleSignup(values, setSubmitting);
+              }
+            }}
+          >
+            {({ handleChange, handleBlur, handleSubmit, values, isSubmitting }) => (
+              <StyleFormArea>
+                <MyTextInput
+                  label="Nombre Completo"
+                  icon="person"
+                  placeholder="Guadalupe Palacio Vega"
+                  placeholderTextColor={darkLight}
+                  onChangeText={handleChange('name')}
+                  onBlur={handleBlur('name')}
+                  value={values.name}
+                />
 
-        <Formik
-          initialValues={{ fullName: '', email: '', dateOfBirth: '', password: '', confirmPassword: '' }}
-          onSubmit={(values) => {
-            console.log(values);
-          }}
-        >
-          {({ handleChange, handleBlur, handleSubmit, values }) => (
-            <StyleFormArea>
-              <MyTextInput
-                label="Nombre Completo"
-                icon="person"
-                placeholder="Guadalupe Palacio Vega"
-                placeholderTextColor={darkLight}
-                onChangeText={handleChange('fullName')}
-                onBlur={handleBlur('fullName')}
-                value={values.fullName}
-              />
+                <MyTextInput
+                  label="Correo"
+                  icon="mail"
+                  placeholder="example@example.com"
+                  placeholderTextColor={darkLight}
+                  onChangeText={handleChange('email')}
+                  onBlur={handleBlur('email')}
+                  value={values.email}
+                  keyboardType="email-address"
+                />
 
-              <MyTextInput
-                label="Correo"
-                icon="mail"
-                placeholder="example@example.com"
-                placeholderTextColor={darkLight}
-                onChangeText={handleChange('email')}
-                onBlur={handleBlur('email')}
-                value={values.email}
-                keyboardType="email-address"
-              />
+                <MyTextInput
+                  label="Matricula"
+                  icon="key"
+                  placeholder="16050007"
+                  placeholderTextColor={darkLight}
+                  onChangeText={handleChange('matricula')}
+                  onBlur={handleBlur('matricula')}
+                  value={values.matricula}
+                />
 
-              <MyTextInput
-                label="Fecha Nacimiento"
-                icon="calendar"
-                placeholder="AAAA - MM - DD"
-                placeholderTextColor={darkLight}
-                onChangeText={handleChange('dateOfBirth')}
-                onBlur={handleBlur('dateOfBirth')}
-                value={dob ? dob.toDateString() : ''}
-                isDate={true}
-                editable={false}
-                showDatePicker={showDatePicker}
-                
-              />
-              <MyTextInput
-                label="Contraseña"
-                icon="lock"
-                placeholder="* * * * * * *"
-                placeholderTextColor={darkLight}
-                onChangeText={handleChange('password')}
-                onBlur={handleBlur('password')}
-                value={values.password}
-                secureTextEntry={hidePassword}
-                isPassword={true}
-                hidePassword={hidePassword}
-                setHidePassword={setHidePassword}
-              />
+                <MyTextInput
+                  label="Contraseña"
+                  icon="lock"
+                  placeholder="* * * * * * *"
+                  placeholderTextColor={darkLight}
+                  onChangeText={handleChange('password')}
+                  onBlur={handleBlur('password')}
+                  value={values.password}
+                  secureTextEntry={hidePassword}
+                  isPassword={true}
+                  hidePassword={hidePassword}
+                  setHidePassword={setHidePassword}
+                />
 
-              <MyTextInput
-                label="Confirmar Contraseña"
-                icon="lock"
-                placeholder="* * * * * * *"
-                placeholderTextColor={darkLight}
-                onChangeText={handleChange('confirmPassword')}
-                onBlur={handleBlur('confirmPassword')}
-                value={values.confirmPassword}
-                secureTextEntry={hidePassword}
-                isPassword={true}
-                hidePassword={hidePassword}
-                setHidePassword={setHidePassword}
-              />
-              <MsgBox>...</MsgBox>
-              <StyledButton onPress={handleSubmit}>
-                <ButtonText>Crear Cuenta</ButtonText>
-              </StyledButton>
-              <Line />
-              <ExtraView>
-                <ExtraText>¿Ya tiene una cuenta? </ExtraText>
-                <TextLink>
-                  <TextLinkContent>Iniciar Sesion</TextLinkContent>
-                </TextLink>
-              </ExtraView>
-            </StyleFormArea>
-          )}
-        </Formik>
-      </InnerContainer>
-    </StyledContainer>
+                <MyTextInput
+                  label="Confirmar Contraseña"
+                  icon="lock"
+                  placeholder="* * * * * * *"
+                  placeholderTextColor={darkLight}
+                  onChangeText={handleChange('confirmPassword')}
+                  onBlur={handleBlur('confirmPassword')}
+                  value={values.confirmPassword}
+                  secureTextEntry={hidePassword}
+                  isPassword={true}
+                  hidePassword={hidePassword}
+                  setHidePassword={setHidePassword}
+                />
+                <MsgBox type={messageType}>{message}</MsgBox>
+
+                {!isSubmitting && (
+                  <StyledButton onPress={handleSubmit}>
+                    <ButtonText>Crear Cuenta</ButtonText>
+                  </StyledButton>
+                )}
+                {isSubmitting && (
+                  <StyledButton disabled={true}>
+                    <ActivityIndicator size="large" color={primary} />
+                  </StyledButton>
+                )}
+
+                <Line />
+                <ExtraView>
+                  <ExtraText>¿Ya tiene una cuenta? </ExtraText>
+                  <TextLink onPress={() => navigation.navigate('Login')}>
+                    <TextLinkContent>Iniciar Sesion</TextLinkContent>
+                  </TextLink>
+                </ExtraView>
+              </StyleFormArea>
+            )}
+          </Formik>
+        </InnerContainer>
+      </StyledContainer>
+    </KeyboardAvoidingWrapper>
   );
-
 };
-const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, isDate, showDatePicker, ...props }) => {
+const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, ...props }) => {
   return (
     <View>
       <LeftIcon>
         <Octicons name={icon} size={30} color={brand} />
       </LeftIcon>
       <StyledInputLabel>{label}</StyledInputLabel>
-      {!isDate && <StyledTextInput {...props} />}
-      {isDate && (
-        <TouchableOpacity onPress={showDatePicker}>
-          <StyledTextInput {...props} />
-        </TouchableOpacity>
-      )}
+      <StyledTextInput {...props} />
 
       {isPassword && (
         <RightIcon onPress={() => setHidePassword(!hidePassword)}>

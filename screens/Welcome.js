@@ -1,119 +1,49 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 
-//formik
-import { Formik } from 'formik';
 
-//iconos
-import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons';
-
-//importar css botones y texto
+//importar componentes personalizados
 import {
-  StyledContainer,
   InnerContainer,
-  PageLogo,
   PageTitle,
   SubTitle,
   StyleFormArea,
-  LeftIcon,
-  StyledTextInput,
-  RightIcon,
-  StyledInputLabel,
-  Colors,
   StyledButton,
   ButtonText,
   MsgBox,
   Line,
-  ExtraView,
-  ExtraText,
-  TextLink,
-  TextLinkContent
+  WelcomeContainer,
+  WelcomeImage,
+  Avatar
 } from './../components/styles';
-import { View } from 'react-native';
 
-//colores
-const { brand, darkLight, primary } = Colors;
-
-const Login = () => {
-  const [hidePassword, setHidePassword] = useState(true);
-
+const Welcome = ({navigation, route}) => {
+  const {name, email, photourl,matricula} = route.params;
+  const AvatarImg = photourl ? {uri: photourl} : require('./../assets/img/img1.jpg');
   return (
-    <StyledContainer>
-      <StatusBar style="dark" />
+    <>
+      <StatusBar style="light" />
       <InnerContainer>
-        <PageLogo resizeMode="cover" source={require('./../assets/img/img1.png')} />
-        <PageTitle>Lista App</PageTitle>
-        <SubTitle>Iniciar Sesion</SubTitle>
-        <Formik
-          initialValues={{ email: '', password: '' }}
-          onSubmit={(values) => {
-            console.log(values);
-          }}
-        >
-          {({ handleChange, handleBlur, handleSubmit, values }) => (
-            <StyleFormArea>
-              <MyTextInput
-                label="Correo"
-                icon="mail"
-                placeholder="example@example.com"
-                placeholderTextColor={darkLight}
-                onChangeText={handleChange('email')}
-                onBlur={handleBlur('email')}
-                value={values.email}
-                keyboardType="email-address"
-              />
-
-              <MyTextInput
-                label="Contraseña"
-                icon="lock"
-                placeholder="* * * * * * *"
-                placeholderTextColor={darkLight}
-                onChangeText={handleChange('password')}
-                onBlur={handleBlur('password')}
-                value={values.password}
-                secureTextEntry={hidePassword}
-                isPassword={true}
-                hidePassword={hidePassword}
-                setHidePassword={setHidePassword}
-              />
-              <MsgBox>...</MsgBox>
-              <StyledButton onPress={handleSubmit}>
-                <ButtonText>Iniciar Sesion</ButtonText>
-              </StyledButton>
-              <Line />
-              <StyledButton google={true} onPress={handleSubmit}>
-                  <Fontisto name="google" color={primary} size={25}/>
-                <ButtonText google={true}>Iniciar Sesion Con Google</ButtonText>
-              </StyledButton>
-              <ExtraView>
-                  <ExtraText>¿Aun no tiene una cuenta? </ExtraText>
-                  <TextLink>
-                      <TextLinkContent>Crear Cuenta</TextLinkContent>
-                  </TextLink>
-              </ExtraView>
-            </StyleFormArea>
-          )}
-        </Formik>
+        <WelcomeImage resizeMode="cover" source={require('./../assets/img/img2.png') }/>
+        <WelcomeContainer>
+          <PageTitle welcome={true}>Bienvenido</PageTitle>
+          <SubTitle welcome={true}>{name}</SubTitle>
+          <SubTitle welcome={true}>{email}</SubTitle>
+          <StyleFormArea>
+            <Avatar resizeMode="cover" source={AvatarImg} />
+            <StyledButton onPress={() => {navigation.navigate('Group',matricula)}}>
+              <ButtonText>Ver Grupos</ButtonText>
+            </StyledButton>
+            <Line />
+            <StyledButton onPress={() => {navigation.navigate('Login')}}>
+              <ButtonText>Cerrar Sesion</ButtonText>
+            </StyledButton>
+          </StyleFormArea>
+        </WelcomeContainer>
       </InnerContainer>
-    </StyledContainer>
+    </>
   );
 };
 
-const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, ...props }) => {
-  return (
-    <View>
-      <LeftIcon>
-        <Octicons name={icon} size={30} color={brand} />
-      </LeftIcon>
-      <StyledInputLabel>{label}</StyledInputLabel>
-      <StyledTextInput {...props} />
-      {isPassword && (
-        <RightIcon onPress={() => setHidePassword(!hidePassword)}>
-          <Ionicons name={hidePassword ? 'md-eye-off' : 'md-eye'} size={30} color={darkLight} />
-        </RightIcon>
-      )}
-    </View>
-  );
-};
 
-export default Login;
+export default Welcome;
