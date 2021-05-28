@@ -1,1 +1,3 @@
-# as
+npm install
+
+expo start
